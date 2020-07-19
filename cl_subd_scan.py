@@ -298,6 +298,7 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric,threads,
 
             func_exit()
             break
+    return subdlist
 
 
 """
@@ -353,7 +354,7 @@ def main():
             print(".... Done")
             print(" ")
         """ """
-        txt = "Scan Started : %s" % (time_start)
+        txt :str = "Scan Started : %s" % (time_start)
         func_writelog('a', logloc, txt + '\n\n')
         print(txt)
         print(" ")
@@ -375,10 +376,9 @@ def main():
         txt = "Subdomains in %s : " % (target)
         func_writelog('a', logloc, txt + '\n')
         print(txt)
-        run_target(target, hosts, resolve_list, 10, True,threads,time_stamp_start,logloc)
+        result=run_target(target, hosts, resolve_list, 10, True,threads,time_stamp_start,logloc)
 
+        os.system("clear")
+        print(result)
 if __name__ == '__main__':
     main()
-    os.system("clear")
-    print("this is the txt")
-    print(txt)
