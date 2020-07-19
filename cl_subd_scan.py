@@ -40,9 +40,9 @@ try:
     import queue
 except:
     import Queue as queue
+txt=''
 
-
-
+# exit handler for signals.  So ctrl+c will work,  even with py threads.
 def killme(signum=0, frame=0):
     os.kill(os.getpid(), 9)
 
@@ -60,7 +60,7 @@ class lookup(Thread):
         if len(self.resolver.nameservers):
             self.backup_resolver = self.resolver.nameservers
         else:
-
+            # we must have a resolver,  and this is the default resolver on my system...
             self.backup_resolver = ['127.0.0.1']
         if len(self.resolver_list):
             self.resolver.nameservers = self.resolver_list
@@ -76,7 +76,7 @@ class lookup(Thread):
                     return False
             except Exception as e:
                 if type(e) == dns.resolver.NXDOMAIN:
-
+                    # not found
                     return False
                 elif type(e) == dns.resolver.NoAnswer or type(e) == dns.resolver.Timeout:
                     if slept == 4:
@@ -110,7 +110,7 @@ class lookup(Thread):
     def run(self):
         while True:
             sub = self.in_q.get()
-            if sub:
+            if sub != False:
                 print('Try: %s' % (sub))
 
             if not sub:
@@ -142,9 +142,7 @@ def func_writelog(how, logloc, txt):  # how: a=append, w=new write
 # func Exit
 def func_exit():
     print(
-        "Exiting...\n\nThanks for using\nCleveridge Subdomain Scanner\n\nCleveridge : "
-        "https://cleveridge.org\nSubdomain Scanner @ Github : "
-        "https://github.com/Cleveridge/cleveridge-subdomain-scanner")
+        "Exiting...\n\nThanks for using\nCleveridge Subdomain Scanner\n\nCleveridge : https://cleveridge.org\nSubdomain Scanner @ Github : https://github.com/Cleveridge/cleveridge-subdomain-scanner")
 
 
 # Return a list of unique sub domains,  alfab. sorted .
@@ -181,7 +179,7 @@ def extract_subdomains(file_name):
     return subs_sorted
 
 
-def check_resolvers(file_name):
+def check_resolvers(file_name,threads):
     txt = 'Checking Resolvers...'
     print(txt)
     ret = []
@@ -200,7 +198,7 @@ def check_resolvers(file_name):
     return ret
 
 
-def run_target(target, hosts, resolve_list, thread_count, print_numeric):
+def run_target(target, hosts, resolve_list, thread_count, print_numeric,threads,time_stamp_start,logloc):
     # The target might have a wildcard dns record...
     wildcard = False
     try:
@@ -208,7 +206,7 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric):
         resp = dns.resolver.Resolver().query(
             "would-never-be-a-fucking-domain-name-" + str(random.randint(1, 9999)) + "." + target)
         wildcard = str(resp[0])
-    except Exception as exeption:
+    except:
         pass
     in_q = queue.Queue()
     out_q = queue.Queue()
@@ -281,7 +279,7 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric):
                 func_writelog('a', logloc, str(txt) + '\n')
                 print(txt)
                 for ipssub in subiplist[ips]:
-                    txt = "      |=> %s" % ipssub
+                    txt = "      |=> %s" % (ipssub)
                     func_writelog('a', logloc, str(txt) + '\n')
                     print(txt)
 
@@ -302,41 +300,23 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric):
             break
 
 
-os.system('clear')
-print("************************************************")
-print("||         CLEVERIDGE SUBDOMAIN SCANNER       ||")
-print("************************************************")
-print("||  IMPORTANT:                                ||")
-print("||  This tool is for ethical testing purpose  ||")
-print("||  only.                                     ||")
-print("||  Cleveridge and its owners can't be held   ||")
-print("||  responsible for misuse by users.          ||")
-print("||  Users have to act as permitted by local   ||")
-print("||  law rules.                                ||")
-print("************************************************")
-print("||     Cleveridge - Ethical Hacking Lab       ||")
-print("||               cleveridge.org               ||")
-print("************************************************\n")
-print("Version %s build %s" % (version, build))
-
 """
 ON FIRST RUN : SETTING UP BASIC FILES AND FOLDERS
 BEGIN:
 """
 
 # -- Creating default log directory
-logdir = "log"
-if not os.path.exists(logdir):
-    os.makedirs(logdir)
-    txt = "Directory 'log/' created"
-    print(txt)
-
 """
 :END
 ON FIRST RUN : SETTING UP BASIC FILES AND FOLDERS
 """
 
-if __name__ == "__main__":
+def main():
+    logdir = "log"
+    if not os.path.exists(logdir):
+        os.makedirs(logdir)
+        txt = "Directory 'log/' created"
+        print(txt)
 
     # Target
     print("\n")
@@ -349,9 +329,9 @@ if __name__ == "__main__":
 
     hosts = open(subfiles[int(choosensub)]).read().split("\n")
 
-    # Action
-    resolve_list = check_resolvers("cnf/resolvers.txt")
     threads = []
+    # Action
+    resolve_list = check_resolvers("cnf/resolvers.txt",threads)
     # signal.signal(signal.SIGINT, killme)
 
     target = target.strip()
@@ -369,7 +349,7 @@ if __name__ == "__main__":
         logloc = logdir + "/" + logfile
         with open(logloc, "w") as mylog:
             os.chmod(logloc, 0o660)
-            mylog.write("Log created by Me - " + version + " build " + build + "\n\n")
+            mylog.write("Log created by Cleveridge Subdomain Scanner - " + version + " build " + build + "\n\n")
             print(".... Done")
             print(" ")
         """ """
@@ -395,4 +375,10 @@ if __name__ == "__main__":
         txt = "Subdomains in %s : " % (target)
         func_writelog('a', logloc, txt + '\n')
         print(txt)
-        run_target(target, hosts, resolve_list, 10, True)
+        run_target(target, hosts, resolve_list, 10, True,threads,time_stamp_start,logloc)
+
+if __name__ == '__main__':
+    main()
+    os.system("clear")
+    print("this is the txt")
+    print(txt)
