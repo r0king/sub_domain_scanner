@@ -1,5 +1,4 @@
-import cl_subd_scan as scanner
-
+import GUI
 if __name__ == '__main__':
-    scanner.main()
+    GUI.main()
 

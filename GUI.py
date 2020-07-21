@@ -1,3 +1,5 @@
+import cl_subd_scan as scanner
+import multiprocessing as mp
 import tkinter as tk
 
 
@@ -30,16 +32,15 @@ class NewguiApp:
         frame_2.place(anchor='nw', relheight='1.0', relwidth='0.7', relx='0.3', rely='0.0', x='0', y='0')
         frame_3 = tk.Frame(frame_1)
 
-        self.entry_3 = tk.Entry(frame_3,width=50)
+        self.entry_3 = tk.Entry(frame_3, width=50)
         self.entry_3.config(font='{Ubuntu} 12 {}')
-        text = '''domain'''
+        text = 'domain'
         self.entry_3.delete('0', 'end')
         self.entry_3.insert('0', text)
         self.entry_3.pack(fill='both', side='top')
 
-
-        buttongo=tk.Button(frame_3,width=50,command=self.clickgone)
-        buttongo.pack()
+        button_go = tk.Button(frame_3, width=50, command=self.domain_scanner_go)
+        button_go.pack()
 
         frame_3.config(height='200', width='200')
         frame_3.place(anchor='nw', relheight='1.0', relwidth='0.30', relx='0.0', rely='0.0', x='0', y='0')
@@ -49,16 +50,26 @@ class NewguiApp:
         # Main widget
         self.mainwindow = frame_1
 
-    def clickgone(self, ):
+    def domain_scanner_go(self, ):
         print(self.entry_3.get())
+        the_scanner.start()
+        if the_scanner.is_alive():
+            print("scanning running")
         return
 
     def run(self):
         self.mainwindow.mainloop()
 
 
-if __name__ == '__main__':
+def main():
     root = tk.Tk()
     app = NewguiApp(root)
     root.geometry('900x500')
+
+    global the_scanner
+    the_scanner = mp.Process(target=scanner.main,args=(10,))
     app.run()
+
+
+if __name__ == '__main__':
+    main()
