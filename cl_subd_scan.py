@@ -314,7 +314,7 @@ ON FIRST RUN : SETTING UP BASIC FILES AND FOLDERS
 """
 
 
-def main(domain_name=None, sub_domain_list=None):
+def main(domain_name=None, sub_domain_list=None, logfile_location=None):
     logdir = "log"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
@@ -357,15 +357,19 @@ def main(domain_name=None, sub_domain_list=None):
         logfile = target.replace('.', '_') + '_' + str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(
             now.minute) + str(now.second) + ".log"
         print("Creating log : log/%s" % (logfile), )
-        logloc = logdir + "/" + logfile
-        with open(logloc, "w") as mylog:
-            os.chmod(logloc, 0o660)
+
+        if logfile_location is None:
+            logfile_location = logdir + "/" + logfile
+
+
+        with open(logfile_location, "w") as mylog:
+            os.chmod(logfile_location, 0o660)
             mylog.write("Log created by Sub-domain Scanner - " + version + " build " + build + "\n\n")
             print(".... Done")
             print(" ")
         """ """
         txt: str = "Scan Started : %s" % (time_start)
-        func_writelog('a', logloc, txt + '\n\n')
+        func_writelog('a', logfile_location, txt + '\n\n')
         print(txt)
         print(" ")
 
@@ -379,14 +383,14 @@ def main(domain_name=None, sub_domain_list=None):
         except Exception:
             visible_ip = urllib2.urlopen('https://enabledns.com/ip', context=ctx).read()
         txt = "Visible IP : " + str(visible_ip)
-        func_writelog("a", logloc, txt + "\n\n")
+        func_writelog("a", logfile_location, txt + "\n\n")
         print(txt)
         print(' ')
 
         txt = "Subdomains in %s : " % (target)
-        func_writelog('a', logloc, txt + '\n')
+        func_writelog('a', logfile_location, txt + '\n')
         print(txt)
-        result = run_target(target, hosts, resolve_list, 10, True, threads, time_stamp_start, logloc)
+        result = run_target(target, hosts, resolve_list, 10, True, threads, time_stamp_start, logfile_location)
 
         os.system("clear")
         print(result)
