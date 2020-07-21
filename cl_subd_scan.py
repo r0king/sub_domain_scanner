@@ -244,6 +244,7 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric, threads
                 else:
                     txt = "%s -> %s" % (d[0], d[1])
                     func_writelog('a', logloc, txt + '\n')
+
                     print(txt)
                     subdlist[i] = txt
                     if d[1] in subiplist.keys():
