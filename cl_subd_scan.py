@@ -15,11 +15,10 @@
 # Contribution from                                         #
 #  - none yet                                               #
 #############################################################
+from typing import Tuple
 
 version = "V0.03"
 build = "003"
-
-
 
 import os
 import random
@@ -40,7 +39,8 @@ try:
     import queue
 except:
     import Queue as queue
-txt=''
+txt = ''
+
 
 # exit handler for signals.  So ctrl+c will work,  even with py threads.
 def killme(signum=0, frame=0):
@@ -179,7 +179,7 @@ def extract_subdomains(file_name):
     return subs_sorted
 
 
-def check_resolvers(file_name,threads):
+def check_resolvers(file_name, threads):
     txt = 'Checking Resolvers...'
     print(txt)
     ret = []
@@ -198,7 +198,7 @@ def check_resolvers(file_name,threads):
     return ret
 
 
-def run_target(target, hosts, resolve_list, thread_count, print_numeric,threads,time_stamp_start,logloc):
+def run_target(target, hosts, resolve_list, thread_count, print_numeric, threads, time_stamp_start, logloc):
     # The target might have a wildcard dns record...
     wildcard = False
     try:
@@ -312,27 +312,36 @@ BEGIN:
 ON FIRST RUN : SETTING UP BASIC FILES AND FOLDERS
 """
 
-def main():
+
+def main(domain_name=None, sub_domain_list=None):
     logdir = "log"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
         txt = "Directory 'log/' created"
         print(txt)
-
+    target=domain_name
     # Target
     print("\n")
-    target = input("Target domain name (eg. google.com) : ")
+    if (domain_name is None):
+        target = input("Target domain name (eg. google.com) : ")
 
     # Subs
-    subfiles = "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt"
-    print("Select a subdomain list :\n1. Xtra Small\n2. Small\n3. Medium\n4. Large\n5. Xtra Large")
-    choosensub = input("List : ")
 
-    hosts = open(subfiles[int(choosensub)]).read().split("\n")
+    sub_files: Tuple[str, str, str, str, str, str] = (
+    "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt")
+
+    choosen_sub=sub_domain_list
+
+    if sub_domain_list is None:
+        print("Select a subdomain list :\n1. Xtra Small\n2. Small\n3. Medium\n4. Large\n5. Xtra Large")
+        choosen_sub = input("List : ")
+
+
+    hosts = open(sub_files[int(choosen_sub)]).read().split("\n")
 
     threads = []
     # Action
-    resolve_list = check_resolvers("cnf/resolvers.txt",threads)
+    resolve_list = check_resolvers("cnf/resolvers.txt", threads)
     # signal.signal(signal.SIGINT, killme)
 
     target = target.strip()
@@ -350,11 +359,11 @@ def main():
         logloc = logdir + "/" + logfile
         with open(logloc, "w") as mylog:
             os.chmod(logloc, 0o660)
-            mylog.write("Log created by Cleveridge Subdomain Scanner - " + version + " build " + build + "\n\n")
+            mylog.write("Log created by Sub-domain Scanner - " + version + " build " + build + "\n\n")
             print(".... Done")
             print(" ")
         """ """
-        txt :str = "Scan Started : %s" % (time_start)
+        txt: str = "Scan Started : %s" % (time_start)
         func_writelog('a', logloc, txt + '\n\n')
         print(txt)
         print(" ")
@@ -376,9 +385,11 @@ def main():
         txt = "Subdomains in %s : " % (target)
         func_writelog('a', logloc, txt + '\n')
         print(txt)
-        result=run_target(target, hosts, resolve_list, 10, True,threads,time_stamp_start,logloc)
+        result = run_target(target, hosts, resolve_list, 10, True, threads, time_stamp_start, logloc)
 
         os.system("clear")
         print(result)
+
+
 if __name__ == '__main__':
     main()
