@@ -393,8 +393,7 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
         result = run_target(target, hosts, resolve_list, 10, True, threads, time_stamp_start, logfile_location)
 
         os.system("clear")
-        print(result)
-
+        return result
 
 if __name__ == '__main__':
     main()
