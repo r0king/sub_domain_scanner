@@ -1,0 +1,13 @@
+{
+    "Detail of sessoin": [
+        {
+            "Time_start": "2020-7-22    23:40:53",
+            "count": 0
+        },
+        {
+            "Time_start": "2020-7-22    23:58:13",
+            "count": 1,
+            "json_loc": "log/google_com_2020722235812.json"
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 import cl_subd_scan as scanner
 import multiprocessing as mp
 import tkinter as tk
+import json
 import sys
 
 class NewguiApp(tk.Frame):
@@ -75,7 +76,11 @@ class NewguiApp(tk.Frame):
         self.mainwindow = frame_1
 
     def printthecontent(self,details):
-        details.insert(tk.END,"\nokworking")
+        if self.the_scanner.is_alive():
+            details.insert(tk.END,"\nScanning..")
+            return
+        self.the_scanner.join()
+
 
     def domain_scanner_go(self, ):
         print("Scanning: ",self.the_scanner.is_alive())
@@ -85,13 +90,12 @@ class NewguiApp(tk.Frame):
             return
         arg1,arg2=self.entry_3.get(),self.sub_filename.get()
         print(arg2,arg1)
-        the_scanner=mp.Process(target=scanner.main,args=(str(arg1),int(arg2)))
+        the_scanner=mp.Process(target=scanner.main,args=(str(arg1),int(arg2),None,json_loc))
         the_scanner.start()
 
 
         self.Text_detail.delete(1.0,"end")
         self.Text_detail.insert(tk.END,self.entry_3.get()+"\n")
-        self.Text_detail.insert(tk.END,"scan complete\n")
         self.printthecontent(self.Text_detail)
         return
 

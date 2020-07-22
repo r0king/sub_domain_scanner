@@ -1,25 +1,8 @@
-#!/usr/bin/python
-
-#############################################################
-# Script to scan for  subdomains of a specific domain,      #
-# thr. TOR                                                  #
-#                                                           #
-# Initial file written by TheRook                           #
-# edited and improved by redN00ws @ Cleveridge              #
-#############################################################
-#                                                           #
-#        C l e v e r i d g e - Ethical Hacking Lab          #
-#                 (https://cleveridge.org)                  #
-#                                                           #
-#############################################################
-# Contribution from                                         #
-#  - none yet                                               #
-#############################################################
 from typing import Tuple
 
 version = "V0.03"
 build = "003"
-
+import json
 import os
 import random
 import re
@@ -137,12 +120,6 @@ class lookup(Thread):
 def func_writelog(how, logloc, txt):  # how: a=append, w=new write
     with open(logloc, how) as mylog:
         mylog.write(txt)
-
-
-# func Exit
-def func_exit():
-    print(
-        "Exiting...\n\nThanks for using\nCleveridge Subdomain Scanner\n\nCleveridge : https://cleveridge.org\nSubdomain Scanner @ Github : https://github.com/Cleveridge/cleveridge-subdomain-scanner")
 
 
 # Return a list of unique sub domains,  alfab. sorted .
@@ -297,7 +274,6 @@ def run_target(target, hosts, resolve_list, thread_count, print_numeric, threads
             print(txt)
             print(txtB)
 
-            func_exit()
             break
     return subdlist
 
@@ -314,13 +290,43 @@ ON FIRST RUN : SETTING UP BASIC FILES AND FOLDERS
 """
 
 
+def checkdetails_json(jsonloc=""):
+    count = 0
+    time_stamp_start = int(time.time())
+    now = datetime.now()
+    time_start = str(now.year) + "-" + str(now.month) + "-" + str(now.day) + "    " + str(now.hour) + ":" + str(
+        now.minute) + ":" + str(now.second)
+
+
+    def write_json(data, filename='details.json'):
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    with open('details.json') as json_file:
+        data = json.load(json_file)
+
+
+        temp = data['Detail of sessoin']
+
+        details_of_session = {"Time_start": time_start,
+                              "count":(int(temp[-1]["count"])+1),
+                              "json_loc":jsonloc
+                              }
+        # appending data to emp_details
+        temp.append(details_of_session)
+
+    write_json(data)
+    return details_of_session["count"]
+
+
 def main(domain_name=None, sub_domain_list=None, logfile_location=None):
+
     logdir = "log"
     if not os.path.exists(logdir):
         os.makedirs(logdir)
         txt = "Directory 'log/' created"
         print(txt)
-    target=domain_name
+    target = domain_name
     # Target
     print("\n")
     if (domain_name is None):
@@ -328,16 +334,15 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
 
     # Subs
 
-    sub_files: Tuple[str, str, str, str, str, str ,str] = (
-    "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt","subs/subs_testing")
+    sub_files: Tuple[str, str, str, str, str, str, str] = (
+        "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt",
+        "subs/subs_testing")
 
-
-    choosen_sub=sub_domain_list
+    choosen_sub = sub_domain_list
 
     if sub_domain_list is None:
         print("Select a subdomain list :\n1. Xtra Small\n2. Small\n3. Medium\n4. Large\n5. Xtra Large")
         choosen_sub = input("List : ")
-
 
     hosts = open(sub_files[int(choosen_sub)]).read().split("\n")
 
@@ -351,17 +356,17 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
 
         """ Every run : create log file """
         # -- Creating log file in directory 'log' --#
+
         now = datetime.now()
-        time_stamp_start = int(time.time())
         time_start = str(now.year) + "-" + str(now.month) + "-" + str(now.day) + "    " + str(now.hour) + ":" + str(
             now.minute) + ":" + str(now.second)
+        time_stamp_start = int(time.time())
         logfile = target.replace('.', '_') + '_' + str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(
             now.minute) + str(now.second) + ".log"
         print("Creating log : log/%s" % (logfile), )
 
         if logfile_location is None:
             logfile_location = logdir + "/" + logfile
-
 
         with open(logfile_location, "w") as mylog:
             os.chmod(logfile_location, 0o660)
@@ -378,12 +383,6 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
-        try:
-            visible_ip = urllib2.urlopen('https://cleveridge.org/_exchange/open_files/return_ip.php?s=subd_scanner',
-                                         context=ctx).read()
-        except Exception:
-            visible_ip = urllib2.urlopen('https://enabledns.com/ip', context=ctx).read()
-        txt = "Visible IP : " + str(visible_ip)
         func_writelog("a", logfile_location, txt + "\n\n")
         print(txt)
         print(' ')
@@ -392,9 +391,14 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
         func_writelog('a', logfile_location, txt + '\n')
         print(txt)
         result = run_target(target, hosts, resolve_list, 10, True, threads, time_stamp_start, logfile_location)
+        logjsonloc=logdir + "/" + logfile[:-4] + ".json"
+        with open(logjsonloc, 'w') as json_save:
 
-        os.system("clear")
+            json.dump(result, json_save)
+            checkdetails_json(logjsonloc)
+
         return result
+
 
 if __name__ == '__main__':
     main()
