@@ -1,34 +1,40 @@
 import cl_subd_scan as scanner
 import multiprocessing as mp
 import tkinter as tk
+from ttkthemes import ThemedStyle
+from tkinter import ttk
+
 import json
+
 import sys
 
-class NewguiApp(tk.Frame):
+
+
+class NewguiApp(ttk.Frame):
 
 
     def __init__(self, master=None):
         self.the_scanner = mp.Process(target=scanner.main)
         self.text_details = tk.StringVar()
         self.goorrun=tk.StringVar()
-        frame_1 = tk.Frame(master)
-        frame_2 = tk.Frame(frame_1)
-        scrollbar_2 = tk.Scrollbar(frame_2)
+        frame_1 = ttk.Frame(master)
+        frame_2 = ttk.Frame(frame_1)
+        scrollbar_2 = ttk.Scrollbar(frame_2)
         scrollbar_2.config(orient='vertical')
         scrollbar_2.place(anchor='nw', relheight='1.0', x='0', y='0')
         
-        button_6 = tk.Button(frame_2)
+        button_6 = ttk.Button(frame_2)
         button_6.config(text='Zenmap')
-        button_6.place(anchor='nw', relx='0.08', rely='0.92', x='0', y='0')
+        button_6.place(anchor='nw', relx='0.10', rely='0.92', x='0', y='0')
         
-        button_7 = tk.Button(frame_2)
+        button_7 = ttk.Button(frame_2)
         button_7.config(text='burp')
-        button_7.place(anchor='nw', relx='0.27', rely='0.92', x='0', y='0')
-        button_8 = tk.Button(frame_2)
+        button_7.place(anchor='nw', relx='0.30', rely='0.92', x='0', y='0')
+        button_8 = ttk.Button(frame_2)
         button_8.config(text='terninal')
-        button_8.place(anchor='nw', relx='0.41', rely='0.92', x='0', y='0')
+        button_8.place(anchor='nw', relx='0.50', rely='0.92', x='0', y='0')
        
-        details_scroll=tk.Scrollbar()
+        details_scroll=ttk.Scrollbar()
         text_details = 'details'
         self.Text_detail = tk.Text(frame_2)
         self.Text_detail.config(background='#78d9d9', font='{KacstScreen} 12 {}', height='10')
@@ -38,9 +44,9 @@ class NewguiApp(tk.Frame):
 
         frame_2.config(height='200', width='200')
         frame_2.place(anchor='nw', relheight='1.0', relwidth='0.6', relx='0.3', rely='0.0', x='0', y='0')
-        frame_3 = tk.Frame(frame_1)
+        frame_3 = ttk.Frame(frame_1)
 
-        self.entry_3 = tk.Entry(frame_3, width=50)
+        self.entry_3 = ttk.Entry(frame_3, width=50)
         self.entry_3.config(font='{Ubuntu} 12 {}')
         domaintext = 'domain'
         self.entry_3.delete('0', 'end')
@@ -49,7 +55,7 @@ class NewguiApp(tk.Frame):
 
     
 
-        self.sub_filename = tk.Entry(frame_3, width=50)
+        self.sub_filename = ttk.Entry(frame_3, width=50)
         self.sub_filename.config(font='{Ubuntu} 12 {}')
         subdomainfile = 'subd file'
         self.sub_filename.delete('0', 'end')
@@ -62,7 +68,7 @@ class NewguiApp(tk.Frame):
             self.the_scanner.join()
         else:
             goorrun="Go"
-        button_go = tk.Button(frame_3, width=50, command=lambda:self.domain_scanner_go(),text=goorrun)
+        button_go = ttk.Button(frame_3, width=50, command=lambda:self.domain_scanner_go(),text=goorrun)
         button_go.pack()
 
 
@@ -75,11 +81,11 @@ class NewguiApp(tk.Frame):
         # Main widget
         self.mainwindow = frame_1
 
-    def printthecontent(self,details):
+    def printthecontent(self):
         if self.the_scanner.is_alive():
-            details.insert(tk.END,"\nScanning..")
-            return
-        self.the_scanner.join()
+            self.Text_detail.insert(tk.END,"\nScanning..")
+        else:
+            self.Text_detail.insert(tk.END,"\nDEtails of the json file im abour to import")
 
 
     def domain_scanner_go(self, ):
@@ -89,14 +95,10 @@ class NewguiApp(tk.Frame):
             self.Text_detail.insert(tk.END,"\nScanner ALready running")
             return
         arg1,arg2=self.entry_3.get(),self.sub_filename.get()
-        print(arg2,arg1)
-        the_scanner=mp.Process(target=scanner.main,args=(str(arg1),int(arg2),None,json_loc))
-        the_scanner.start()
-
-
+        scanner.main(str(arg1),int(arg2))
         self.Text_detail.delete(1.0,"end")
         self.Text_detail.insert(tk.END,self.entry_3.get()+"\n")
-        self.printthecontent(self.Text_detail)
+        self.printthecontent()
         return
 
     def run(self):
@@ -106,6 +108,8 @@ def main():
     root = tk.Tk()
     app = NewguiApp(root)
     root.geometry('900x500')
+    style = ThemedStyle(root)
+    style.set_theme("arc")
     app.run()
 
 
