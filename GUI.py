@@ -1,12 +1,15 @@
 import cl_subd_scan as scanner
 import multiprocessing as mp
 import tkinter as tk
+import sys
 
+class NewguiApp(tk.Frame):
 
-class NewguiApp:
 
     def __init__(self, master=None):
-        # build ui
+        global the_scanner
+        the_scanner = mp.Process(target=scanner.main, args=[None, 1])
+
         self.text = tk.StringVar()
         frame_1 = tk.Frame(master)
         frame_2 = tk.Frame(frame_1)
@@ -51,10 +54,17 @@ class NewguiApp:
         self.mainwindow = frame_1
 
     def domain_scanner_go(self, ):
-        print(self.entry_3.get())
-        the_scanner.start()
+
         if the_scanner.is_alive():
+
             print("scanning running")
+            return
+        else:
+            self.the_scanner=mp.Process(target=scanner.main(domain_name=self.entry_3.get()))
+            the_scanner.start()
+
+        print(self.entry_3.get())
+
         return
 
     def run(self):
@@ -65,10 +75,8 @@ def main():
     root = tk.Tk()
     app = NewguiApp(root)
     root.geometry('900x500')
-
-    global the_scanner
-    the_scanner = mp.Process(target=scanner.main,args=(10,))
     app.run()
+    app.the_scanner.kill()
 
 
 if __name__ == '__main__':
