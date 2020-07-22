@@ -88,6 +88,7 @@ class NewguiApp(tk.Frame):
         self.the_scanner=mp.Process(target=scanner.main(self.entry_3.get(),self.sub_filename.get()))
         the_scanner.start()
 
+
         print("Scanning: ",the_scanner.is_alive())
 
         self.Text_detail.delete(1.0,"end")
