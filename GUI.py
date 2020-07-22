@@ -2,15 +2,12 @@ import cl_subd_scan as scanner
 import multiprocessing as mp
 import tkinter as tk
 import sys
-from tkinter import messagebox
 
 class NewguiApp(tk.Frame):
 
 
     def __init__(self, master=None):
-
-        global the_scanner
-        the_scanner=mp.Process()
+        self.the_scanner = mp.Process(target=scanner.main)
         self.text_details = tk.StringVar()
         self.goorrun=tk.StringVar()
         frame_1 = tk.Frame(master)
@@ -59,13 +56,16 @@ class NewguiApp(tk.Frame):
         self.sub_filename.pack(fill='both', side='top')
 
 
-        if the_scanner.is_alive():
+        if self.the_scanner.is_alive():
             goorrun="Running"
+            self.the_scanner.join()
         else:
             goorrun="Go"
         button_go = tk.Button(frame_3, width=50, command=lambda:self.domain_scanner_go(),text=goorrun)
         button_go.pack()
-        
+
+
+        print("Scanning: ",self.the_scanner.is_alive())
         frame_3.config(height='200', width='200')
         frame_3.place(anchor='nw', relheight='1.0', relwidth='0.30', relx='0.0', rely='0.0', x='0', y='0')
         frame_1.config(height='500', relief='flat', width='900')
@@ -78,18 +78,16 @@ class NewguiApp(tk.Frame):
         details.insert(tk.END,"\nokworking")
 
     def domain_scanner_go(self, ):
-        print("Scanning: ",the_scanner.is_alive())
-        if the_scanner.is_alive():
+        print("Scanning: ",self.the_scanner.is_alive())
 
+        if self.the_scanner.is_alive():
             self.Text_detail.insert(tk.END,"\nScanner ALready running")
-           
             return
-
-        self.the_scanner=mp.Process(target=scanner.main(self.entry_3.get(),self.sub_filename.get()))
+        arg1,arg2=self.entry_3.get(),self.sub_filename.get()
+        print(arg2,arg1)
+        the_scanner=mp.Process(target=scanner.main,args=(str(arg1),int(arg2)))
         the_scanner.start()
 
-
-        print("Scanning: ",the_scanner.is_alive())
 
         self.Text_detail.delete(1.0,"end")
         self.Text_detail.insert(tk.END,self.entry_3.get()+"\n")

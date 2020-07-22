@@ -328,8 +328,9 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
 
     # Subs
 
-    sub_files: Tuple[str, str, str, str, str, str] = (
-    "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt")
+    sub_files: Tuple[str, str, str, str, str, str ,str] = (
+    "", "subs/subs_xs.txt", "subs/subs_s.txt", "subs/subs_m.txt", "subs/subs_l.txt", "subs/subs_xl.txt","subs/subs_testing")
+
 
     choosen_sub=sub_domain_list
 
