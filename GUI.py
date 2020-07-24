@@ -1,4 +1,4 @@
-import cl_subd_scan as scanner
+import sub_domain_scanner as scanner
 import multiprocessing as mp
 import tkinter as tk
 from ttkthemes import ThemedStyle
