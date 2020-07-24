@@ -9,40 +9,36 @@ import json
 import sys
 
 
-
 class NewguiApp(ttk.Frame):
-
 
     def __init__(self, master=None):
         self.the_scanner = mp.Process(target=scanner.main)
-        self.text_details = tk.StringVar()
-        self.goorrun=tk.StringVar()
-        frame_1 = ttk.Frame(master)
+        self.goorrun = tk.StringVar()
+        frame_1 = ttk.Frame(master, relief='flat')
         frame_2 = ttk.Frame(frame_1)
+        frame_1.place(anchor='nw', relx='0.0', rely='0.0', x='0', y='0', relheight='1.0', relwidth='1.0')
+
         scrollbar_2 = ttk.Scrollbar(frame_2)
         scrollbar_2.config(orient='vertical')
         scrollbar_2.place(anchor='nw', relheight='1.0', x='0', y='0')
-        
+
         button_6 = ttk.Button(frame_2)
         button_6.config(text='Zenmap')
-        button_6.place(anchor='nw', relx='0.10', rely='0.92', x='0', y='0')
-        
+        button_6.place(anchor='nw', x="20", rely='0.95')
+
         button_7 = ttk.Button(frame_2)
         button_7.config(text='burp')
-        button_7.place(anchor='nw', relx='0.30', rely='0.92', x='0', y='0')
+        button_7.place(anchor='nw', x="120", rely='0.95')
         button_8 = ttk.Button(frame_2)
-        button_8.config(text='terninal')
-        button_8.place(anchor='nw', relx='0.50', rely='0.92', x='0', y='0')
-       
-        details_scroll=ttk.Scrollbar()
-        text_details = 'details'
-        self.Text_detail = tk.Text(frame_2)
-        self.Text_detail.config(background='#78d9d9', font='{KacstScreen} 12 {}', height='10')
-        self.Text_detail.config( width='50')
-        self.Text_detail.place(anchor='nw', relheight='0.85', relwidth='1', relx='0.03', rely='0.03', x='0', y='0')
-        self.Text_detail.insert(tk.END,"select domain")
+        button_8.config(text='terminal')
+        button_8.place(anchor='nw', x="220", rely='0.95')
 
-        frame_2.config(height='200', width='200')
+        self.Text_detail = tk.Text(frame_2)
+        self.Text_detail.config(background='#78d9d9', font='{KacstScreen} 12 {}')
+        self.Text_detail.config(width='50')
+        self.Text_detail.place(anchor='nw', relheight='0.85', relwidth='1', relx='0.03', rely='0.03', x='0', y='0')
+        self.Text_detail.insert(tk.END, "select domain")
+
         frame_2.place(anchor='nw', relheight='1.0', relwidth='0.6', relx='0.3', rely='0.0', x='0', y='0')
         frame_3 = ttk.Frame(frame_1)
 
@@ -53,8 +49,6 @@ class NewguiApp(ttk.Frame):
         self.entry_3.insert('0', domaintext)
         self.entry_3.pack(fill='both', side='top')
 
-    
-
         self.sub_filename = ttk.Entry(frame_3, width=50)
         self.sub_filename.config(font='{Ubuntu} 12 {}')
         subdomainfile = 'subd file'
@@ -62,54 +56,58 @@ class NewguiApp(ttk.Frame):
         self.sub_filename.insert('0', subdomainfile)
         self.sub_filename.pack(fill='both', side='top')
 
-
         if self.the_scanner.is_alive():
-            goorrun="Running"
+            goorrun = "Running"
             self.the_scanner.join()
         else:
-            goorrun="Go"
-        button_go = ttk.Button(frame_3, width=50, command=lambda:self.domain_scanner_go(),text=goorrun)
+            goorrun = "Go"
+        button_go = ttk.Button(frame_3, width=50, command=self.domain_scanner_go, text=goorrun)
         button_go.pack()
 
-
-        print("Scanning: ",self.the_scanner.is_alive())
-        frame_3.config(height='200', width='200')
+        print("Scanning: ", self.the_scanner.is_alive())
         frame_3.place(anchor='nw', relheight='1.0', relwidth='0.30', relx='0.0', rely='0.0', x='0', y='0')
-        frame_1.config(height='500', relief='flat', width='900')
-        frame_1.pack(side='top')
 
         # Main widget
         self.mainwindow = frame_1
 
     def printthecontent(self):
-        if self.the_scanner.is_alive():
-            self.Text_detail.insert(tk.END,"\nScanning..")
-        else:
-            self.Text_detail.insert(tk.END,"\nDEtails of the json file im abour to import")
 
+        self.Text_detail.delete(1.0, "end")
+        if self.the_scanner.is_alive():
+            self.Text_detail.insert(tk.END, "\nScanning..")
+        else:
+            self.Text_detail.insert(tk.END, "\nScan completed..\n")
+
+        with open("details.json", 'r') as json_details_loc:
+            details_content_dict = json.load(json_details_loc)
+            with open(str(details_content_dict['Detail of sessoin'][-1]["json_loc"]), 'r') as json_details:
+                details_content_dict = json.load(json_details)
+            for num, line in details_content_dict.items():
+                self.Text_detail.insert(tk.END, "{}, {} \n".format(str(num + 1), line))
 
     def domain_scanner_go(self, ):
-        print("Scanning: ",self.the_scanner.is_alive())
+        self.Text_detail.insert(tk.END, "Scanning: ", self.the_scanner.is_alive())
 
         if self.the_scanner.is_alive():
-            self.Text_detail.insert(tk.END,"\nScanner ALready running")
+            self.Text_detail.insert(tk.END, "\nScanner ALready running")
             return
-        arg1,arg2=self.entry_3.get(),self.sub_filename.get()
-        scanner.main(str(arg1),int(arg2))
-        self.Text_detail.delete(1.0,"end")
-        self.Text_detail.insert(tk.END,self.entry_3.get()+"\n")
+        arg1, arg2 = self.entry_3.get(), self.sub_filename.get()
+        scanner.main(str(arg1), int(arg2))
+        self.Text_detail.delete(1.0, "end")
+        self.Text_detail.insert(tk.END, self.entry_3.get() + "\n")
         self.printthecontent()
         return
 
     def run(self):
         self.mainwindow.mainloop()
 
+
 def main():
     root = tk.Tk()
     app = NewguiApp(root)
-    root.geometry('900x500')
+    root.geometry("1500x900")
     style = ThemedStyle(root)
-    style.set_theme("arc")
+    style.set_theme("breeze")
     app.run()
 
 

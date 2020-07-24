@@ -383,9 +383,6 @@ def main(domain_name=None, sub_domain_list=None, logfile_location=None):
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
-        func_writelog("a", logfile_location, txt + "\n\n")
-        print(txt)
-        print(' ')
 
         txt = "Subdomains in %s : " % (target)
         func_writelog('a', logfile_location, txt + '\n')
