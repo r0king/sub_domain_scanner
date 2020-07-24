@@ -1,15 +1,19 @@
+from tkinter.messagebox import *
 
-import json
+# Showing various messaes 
 
+print(askokcancel("askokcancel", "Ok or Cancel"))
 
+print(askquestion("askquestion", "Question?"))
 
+print(askretrycancel("askretrycancel", "Retry or Cancel"))
 
+print(askyesno("askyesno", "Yes or No"))
 
-with open("details.json", 'r') as json_details_loc:
-    details_content_dict = json.load(json_details_loc)
-    with open(str(details_content_dict['Detail of sessoin'][-1]["json_loc"]), 'r') as json_details:
-        details_content_dict = json.load(json_details)
-    for num,line in details_content_dict.items():
-        print(num,line)
+print(askyesnocancel("askyesnocancel", "Yes or No or Cancel"))
 
-    print("{}".format("{}, {} \n".format(num,line) for num,line in details_content_dict.items() ))
+print(showerror("showerror", "Error"))
+
+print(showinfo("showinfo", "Information"))
+
+print(showwarning("showwarning", "Warning")) 

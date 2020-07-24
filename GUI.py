@@ -9,7 +9,7 @@ import json
 import sys
 
 
-class NewguiApp(ttk.Frame):
+class Main_gui_app(ttk.Frame):
 
     def __init__(self, master=None):
         self.the_scanner = mp.Process(target=scanner.main)
@@ -83,7 +83,7 @@ class NewguiApp(ttk.Frame):
             with open(str(details_content_dict['Detail of sessoin'][-1]["json_loc"]), 'r') as json_details:
                 details_content_dict = json.load(json_details)
             for num, line in details_content_dict.items():
-                self.Text_detail.insert(tk.END, "{}, {} \n".format(str(num + 1), line))
+                self.Text_detail.insert(tk.END, "{}, {} \n".format(str(num), line))
 
     def domain_scanner_go(self, ):
         self.Text_detail.insert(tk.END, "Scanning: ", self.the_scanner.is_alive())
@@ -104,7 +104,7 @@ class NewguiApp(ttk.Frame):
 
 def main():
     root = tk.Tk()
-    app = NewguiApp(root)
+    app = Main_gui_app(root)
     root.geometry("1500x900")
     style = ThemedStyle(root)
     style.set_theme("breeze")

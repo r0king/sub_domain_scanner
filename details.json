@@ -78,6 +78,16 @@
             "Time_start": "2020-7-24    17:17:55",
             "count": 15,
             "json_loc": "log/domain_2020724171755.json"
+        },
+        {
+            "Time_start": "2020-7-24    17:24:21",
+            "count": 16,
+            "json_loc": "log/google_com_202072417245.json"
+        },
+        {
+            "Time_start": "2020-7-24    17:25:16",
+            "count": 17,
+            "json_loc": "log/domain_com_202072417257.json"
         }
     ]
 }
