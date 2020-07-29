@@ -3,7 +3,7 @@ import multiprocessing as mp
 import tkinter as tk
 from ttkthemes import ThemedStyle
 from tkinter import ttk
-
+from tkinter.messagebox import *
 import json
 
 import sys
@@ -16,8 +16,8 @@ class Main_gui_app(ttk.Frame):
         self.goorrun = tk.StringVar()
         frame_1 = ttk.Frame(master, relief='flat')
         frame_2 = ttk.Frame(frame_1)
-        frame_1.place(anchor='nw', relx='0.0', rely='0.0', x='0', y='0', relheight='1.0', relwidth='1.0')
-
+        frame_1.pack(expand="true",fill="both")
+        
         scrollbar_2 = ttk.Scrollbar(frame_2)
         scrollbar_2.config(orient='vertical')
         scrollbar_2.place(anchor='nw', relheight='1.0', x='0', y='0')
@@ -47,22 +47,26 @@ class Main_gui_app(ttk.Frame):
         domaintext = 'domain'
         self.entry_3.delete('0', 'end')
         self.entry_3.insert('0', domaintext)
-        self.entry_3.pack(fill='both', side='top')
+        self.entry_3.pack(fill='both', side='top',pady=10,padx=(7,0))
 
-        self.sub_filename = ttk.Entry(frame_3, width=50)
+        self.sub_filename = ttk.Entry(frame_3, width=70)
         self.sub_filename.config(font='{Ubuntu} 12 {}')
         subdomainfile = 'subd file'
         self.sub_filename.delete('0', 'end')
         self.sub_filename.insert('0', subdomainfile)
-        self.sub_filename.pack(fill='both', side='top')
+        self.sub_filename.pack(fill='both', side='top',pady=10,padx=(7,0))
 
         if self.the_scanner.is_alive():
             goorrun = "Running"
             self.the_scanner.join()
         else:
             goorrun = "Go"
-        button_go = ttk.Button(frame_3, width=50, command=self.domain_scanner_go, text=goorrun)
-        button_go.pack()
+        button_go = ttk.Button(frame_3, command=self.domain_scanner_go, text=goorrun)
+        button_go.pack(side=tk.LEFT,anchor="nw",fill=tk.X,expand="true",pady=10,padx=(7,0))
+        button_go = ttk.Button(frame_3,  command=lambda:showinfo("showinfo", "Information"), text="Manual")
+        button_go.pack(side=tk.RIGHT,anchor="nw",pady=10,padx=(7,0))
+
+        Ra
 
         print("Scanning: ", self.the_scanner.is_alive())
         frame_3.place(anchor='nw', relheight='1.0', relwidth='0.30', relx='0.0', rely='0.0', x='0', y='0')

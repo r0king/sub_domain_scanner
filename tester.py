@@ -1,19 +1,36 @@
-from tkinter.messagebox import *
+import tkinter as tk
 
-# Showing various messaes 
+root = tk.Tk()
 
-print(askokcancel("askokcancel", "Ok or Cancel"))
+v = tk.IntVar()
+v.set(1)  # initializing the choice, i.e. Python
 
-print(askquestion("askquestion", "Question?"))
+languages = [
+    ("Python",1),
+    ("Perl",2),
+    ("Java",3),
+    ("C++",4),
+    ("C",5)
+]
 
-print(askretrycancel("askretrycancel", "Retry or Cancel"))
+def ShowChoice():
+    print(v.get())
 
-print(askyesno("askyesno", "Yes or No"))
+tk.Label(root,
+         text="""Choose your favourite 
+programming language:""",
+         justify = tk.LEFT,
+         padx = 20).pack()
 
-print(askyesnocancel("askyesnocancel", "Yes or No or Cancel"))
-
-print(showerror("showerror", "Error"))
-
-print(showinfo("showinfo", "Information"))
-
-print(showwarning("showwarning", "Warning")) 
+for val, language in enumerate(languages):
+    tk.Radiobutton(root,
+                   text=language,
+                   indicatoron=0,
+                   width=20,
+                   padx=20,
+                   variable=v,
+                   command=ShowChoice,
+                   value=val).pack(anchor=tk.W,pady=2,padx=3)
+for x,y in enumerate(languages):
+    print(x,y)
+root.mainloop()
